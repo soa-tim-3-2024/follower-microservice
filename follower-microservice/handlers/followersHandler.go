@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"encoding/json"
 	"followersModule/model"
 	"followersModule/repository"
 	"log"
@@ -53,6 +54,9 @@ func (f *FollowersHandler) CreateFollowing(rw http.ResponseWriter, h *http.Reque
 		rw.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	user = model.User{}
+	jsonData, _ := json.Marshal(user)
+	rw.Write(jsonData)
 }
 
 func (f *FollowersHandler) GetUser(rw http.ResponseWriter, h *http.Request) {
@@ -64,6 +68,27 @@ func (f *FollowersHandler) GetUser(rw http.ResponseWriter, h *http.Request) {
 	}
 
 	err = user.ToJSON(rw)
+	if err != nil {
+		http.Error(rw, "Unable to convert to json", http.StatusInternalServerError)
+		f.logger.Fatal("Unable to convert to json :", err)
+		return
+	}
+}
+
+func (f *FollowersHandler) GetFollowingsForUser(rw http.ResponseWriter, h *http.Request) {
+	vars := mux.Vars(h)
+	id := vars["userId"]
+	users, err := f.repo.GetFollowingsForUser(id)
+	if err != nil {
+		f.logger.Print("Database exception: ", err)
+	}
+	if users == nil {
+		users = model.Users{}
+		jsonData, _ := json.Marshal(users)
+		rw.Write(jsonData)
+		return
+	}
+	err = users.ToJSON(rw)
 	if err != nil {
 		http.Error(rw, "Unable to convert to json", http.StatusInternalServerError)
 		f.logger.Fatal("Unable to convert to json :", err)

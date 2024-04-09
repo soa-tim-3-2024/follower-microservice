@@ -168,3 +168,38 @@ func (mr *FollowersRepo) ReadUser(userId string) (model.User, error) {
 
 	return userFromDatabase, nil
 }
+
+func (mr *FollowersRepo) GetFollowingsForUser(userId string) (model.Users, error) {
+	ctx := context.Background()
+	session := mr.driver.NewSession(ctx, neo4j.SessionConfig{DatabaseName: "baza"})
+	defer session.Close(ctx)
+
+	userResults, err := session.ExecuteRead(ctx,
+		func(transaction neo4j.ManagedTransaction) (any, error) {
+			result, err := transaction.Run(ctx,
+				`match (n:User)<-[r:IS_FOLLOWING]-(p:User) where p.userId = $userId return n.userId as id, n.username as username, n.profileImage as pImage`,
+				map[string]any{"userId": userId})
+			if err != nil {
+				return nil, err
+			}
+
+			var users model.Users
+			for result.Next(ctx) {
+				record := result.Record()
+				id, _ := record.Get("id")
+				username, _ := record.Get("username")
+				pImage, _ := record.Get("pImage")
+				users = append(users, &model.User{
+					UserId:       id.(string),
+					Username:     username.(string),
+					ProfileImage: pImage.(string),
+				})
+			}
+			return users, nil
+		})
+	if err != nil {
+		mr.logger.Println("Error querying search:", err)
+		return nil, err
+	}
+	return userResults.(model.Users), nil
+}

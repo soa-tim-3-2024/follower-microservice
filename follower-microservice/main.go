@@ -43,6 +43,9 @@ func main() {
 	postFollowingRouter.HandleFunc("/following", FollowersHandler.CreateFollowing)
 	postFollowingRouter.Use(FollowersHandler.MiddlewareNewFollowingDeserialization)
 
+	getFollowingsRouter := router.Methods(http.MethodGet).Subrouter()
+	getFollowingsRouter.HandleFunc("/user-followings/{userId}", FollowersHandler.GetFollowingsForUser)
+
 	cors := gorillaHandlers.CORS(gorillaHandlers.AllowedOrigins([]string{"*"}))
 
 	server := http.Server{
