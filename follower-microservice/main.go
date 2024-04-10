@@ -43,8 +43,17 @@ func main() {
 	postFollowingRouter.HandleFunc("/following", FollowersHandler.CreateFollowing)
 	postFollowingRouter.Use(FollowersHandler.MiddlewareNewFollowingDeserialization)
 
+	deleteFollowingRouter := router.Methods(http.MethodPut).Subrouter()
+	deleteFollowingRouter.HandleFunc("/unfollow", FollowersHandler.UnfollowUser)
+	deleteFollowingRouter.Use(FollowersHandler.MiddlewareUnfollowUserDeserialization)
+
+	//koga trenutni korisnik (userId) prati
 	getFollowingsRouter := router.Methods(http.MethodGet).Subrouter()
 	getFollowingsRouter.HandleFunc("/user-followings/{userId}", FollowersHandler.GetFollowingsForUser)
+
+	//ko sve trenutnog korisnika (userId) prati
+	getFollowersRouter := router.Methods(http.MethodGet).Subrouter()
+	getFollowersRouter.HandleFunc("/user-followers/{userId}", FollowersHandler.GetFollowersForUser)
 
 	cors := gorillaHandlers.CORS(gorillaHandlers.AllowedOrigins([]string{"*"}))
 
