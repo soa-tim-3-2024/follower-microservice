@@ -18,7 +18,7 @@ type FollowersRepo struct {
 // NoSQL: Constructor which reads db configuration from environment and creates a keyspace
 func New(logger *log.Logger) (*FollowersRepo, error) {
 	// Local instance
-	uri := "bolt://localhost:7687"
+	uri := "bolt://neo4j:7687"
 	user := "neo4j"
 	pass := "Dejann03"
 	auth := neo4j.BasicAuth(user, pass, "")
@@ -55,7 +55,7 @@ func (mr *FollowersRepo) CloseDriverConnection(ctx context.Context) {
 
 func (mr *FollowersRepo) SaveFollowing(user *model.User, userToFollow *model.User) error {
 	ctx := context.Background()
-	session := mr.driver.NewSession(ctx, neo4j.SessionConfig{DatabaseName: "baza"})
+	session := mr.driver.NewSession(ctx, neo4j.SessionConfig{DatabaseName: "neo4j"})
 	defer session.Close(ctx)
 	mr.SaveUser(user)
 	mr.SaveUser(userToFollow)
@@ -97,7 +97,7 @@ func (mr *FollowersRepo) SaveUser(user *model.User) (bool, error) {
 
 func (mr *FollowersRepo) WriteUserToDatabase(user *model.User) error {
 	ctx := context.Background()
-	session := mr.driver.NewSession(ctx, neo4j.SessionConfig{DatabaseName: "baza"}) //baza podataka na koju se povezujem
+	session := mr.driver.NewSession(ctx, neo4j.SessionConfig{DatabaseName: "neo4j"}) //baza podataka na koju se povezujem
 	defer session.Close(ctx)
 	newUser, err := session.ExecuteWrite(ctx,
 		func(transaction neo4j.ManagedTransaction) (any, error) {
@@ -124,7 +124,7 @@ func (mr *FollowersRepo) WriteUserToDatabase(user *model.User) error {
 
 func (mr *FollowersRepo) ReadUser(userId string) (model.User, error) {
 	ctx := context.Background()
-	session := mr.driver.NewSession(ctx, neo4j.SessionConfig{DatabaseName: "baza"})
+	session := mr.driver.NewSession(ctx, neo4j.SessionConfig{DatabaseName: "neo4j"})
 	defer session.Close(ctx)
 	user, err := session.ExecuteRead(ctx,
 		func(transaction neo4j.ManagedTransaction) (any, error) {
@@ -171,7 +171,7 @@ func (mr *FollowersRepo) ReadUser(userId string) (model.User, error) {
 
 func (mr *FollowersRepo) GetFollowingsForUser(userId string) (model.Users, error) {
 	ctx := context.Background()
-	session := mr.driver.NewSession(ctx, neo4j.SessionConfig{DatabaseName: "baza"})
+	session := mr.driver.NewSession(ctx, neo4j.SessionConfig{DatabaseName: "neo4j"})
 	defer session.Close(ctx)
 
 	userResults, err := session.ExecuteRead(ctx,
@@ -206,7 +206,7 @@ func (mr *FollowersRepo) GetFollowingsForUser(userId string) (model.Users, error
 
 func (mr *FollowersRepo) GetFollowersForUser(userId string) (model.Users, error) {
 	ctx := context.Background()
-	session := mr.driver.NewSession(ctx, neo4j.SessionConfig{DatabaseName: "baza"})
+	session := mr.driver.NewSession(ctx, neo4j.SessionConfig{DatabaseName: "neo4j"})
 	defer session.Close(ctx)
 
 	userResults, err := session.ExecuteRead(ctx,
@@ -241,7 +241,7 @@ func (mr *FollowersRepo) GetFollowersForUser(userId string) (model.Users, error)
 
 func (mr *FollowersRepo) DeleteFollowing(userId string, userToUnfollowId string) error {
 	ctx := context.Background()
-	session := mr.driver.NewSession(ctx, neo4j.SessionConfig{DatabaseName: "baza"})
+	session := mr.driver.NewSession(ctx, neo4j.SessionConfig{DatabaseName: "neo4j"})
 	defer session.Close(ctx)
 	_, err := session.ExecuteWrite(ctx,
 		func(transaction neo4j.ManagedTransaction) (any, error) {
@@ -267,7 +267,7 @@ func (mr *FollowersRepo) DeleteFollowing(userId string, userToUnfollowId string)
 
 func (mr *FollowersRepo) GetRecommendationsForUser(userId string) (model.Users, error) {
 	ctx := context.Background()
-	session := mr.driver.NewSession(ctx, neo4j.SessionConfig{DatabaseName: "baza"})
+	session := mr.driver.NewSession(ctx, neo4j.SessionConfig{DatabaseName: "neo4j"})
 	defer session.Close(ctx)
 
 	userResults, err := session.ExecuteRead(ctx,
