@@ -1,0 +1,3 @@
+- Selektuj sve korisnike: MATCH (n:User) RETURN n LIMIT 25
+
+- Obrisi sve korisnike:   MATCH (n:User) DETACH DELETE n
