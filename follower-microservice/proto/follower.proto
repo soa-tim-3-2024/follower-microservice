@@ -1,0 +1,51 @@
+
+syntax = "proto3";
+
+option go_package = "proto/follower";
+
+service Followers {
+	rpc GetUserFollowings(Identificator) returns (ListFollowingResponse) { }
+
+	rpc GetUserFollowers(Identificator) returns (ListFollowingResponse) { }
+
+	rpc GetUserRecommendations(Identificator) returns (ListFollowingResponse) {	}
+
+	rpc CreateNewFollowing(FollowingCreateRequest) returns (FollowerResponse) {	}
+
+	rpc UnfollowUser(UserUnfollowRequest) returns (FollowerResponse) { }
+
+}
+
+message Identificator {
+	int64 id = 1;
+}
+
+message FollowingResponse {
+	string userId = 1;
+    string username = 2;
+    string profileImage = 3;
+}
+
+message ListFollowingResponse {
+	repeated FollowingResponse list = 1;
+}
+
+message FollowingCreateRequest {
+	string userId  = 1;
+    string username  = 2;
+    string profileImage  = 3;
+    string followingUserId  = 4;
+    string followingUsername  = 5;
+    string followingProfileImage  = 6;
+}
+
+message UserUnfollowRequest {
+	string userId  = 1;
+	string userToUnfollowId  = 2;
+}
+
+message FollowerResponse {
+	int64 id = 1;
+    int64 userId = 2;
+	int64 followedById = 3;
+}
