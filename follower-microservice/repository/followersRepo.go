@@ -18,9 +18,9 @@ type FollowersRepo struct {
 // NoSQL: Constructor which reads db configuration from environment and creates a keyspace
 func New(logger *log.Logger) (*FollowersRepo, error) {
 	// Local instance
-	uri := "bolt://neo4j:7687"
-	user := "neo4j"
-	pass := "Dejann03"
+	uri := "bolt://localhost:7687"
+	user := "bole"
+	pass := "12345678"
 	auth := neo4j.BasicAuth(user, pass, "")
 
 	driver, err := neo4j.NewDriverWithContext(uri, auth)
